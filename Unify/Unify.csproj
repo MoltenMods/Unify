@@ -26,6 +26,6 @@
 
     <Target Name="Copy" AfterTargets="Reobfuscate">
         <Copy SourceFiles="$(OutputPath)reobfuscated/$(AssemblyName)-$(GameVersion).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" />
-        <Copy SourceFiles="$(OutputPath)reobfuscated/$(AssemblyName)-$(GameVersion).dll" DestinationFolder="build/" />
+        <Copy SourceFiles="$(OutputPath)reobfuscated/$(AssemblyName)-$(GameVersion).dll" DestinationFolder="../build/" />
     </Target>
 </Project>
