@@ -2,6 +2,7 @@
 using BepInEx.IL2CPP;
 using HarmonyLib;
 using Reactor;
+using Unify.Patches;
 
 namespace Unify
 {
@@ -18,6 +19,8 @@ namespace Unify
 
         public override void Load()
         {
+            RegionsPatch.Patch();
+            
             Harmony.PatchAll();
         }
     }
