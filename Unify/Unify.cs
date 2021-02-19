@@ -11,7 +11,7 @@ namespace Unify
     [BepInDependency(ReactorPlugin.Id)]
     public class UnifyPlugin : BasePlugin
     {
-        public const string Id = "reactor.unify";
+        public const string Id = "daemon.unify.reactor";
         private const string Name = "Unify";
         private const string Version = "0.1.0";
 
