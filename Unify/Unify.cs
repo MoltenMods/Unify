@@ -1,4 +1,6 @@
-﻿using BepInEx;
+﻿using System.IO;
+using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using HarmonyLib;
 using Reactor;
@@ -13,7 +15,10 @@ namespace Unify
     {
         public const string Id = "daemon.unify.reactor";
         private const string Name = "Unify";
-        private const string Version = "0.1.0";
+        private const string Version = "0.1.1";
+        
+        public static readonly ConfigFile ConfigFile =
+            new ConfigFile(Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg"), true);
 
         public Harmony Harmony { get; } = new Harmony(Id);
 
