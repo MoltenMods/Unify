@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using BepInEx.Configuration;
 using HarmonyLib;
 
 namespace Unify.Patches
@@ -20,12 +22,44 @@ namespace Unify.Patches
                 })
             };
             
-            RegionInfo[] oldRegions = ServerManager.DefaultRegions;
+            RegionInfo[] customRegions = LoadCustomRegions();
+            
+            RegionInfo[] patchedRegions = MergeRegions(ServerManager.DefaultRegions, newRegions);
+            patchedRegions = MergeRegions(patchedRegions, customRegions);
+
+            ServerManager.DefaultRegions = patchedRegions;
+        }
+
+        private static RegionInfo[] MergeRegions(RegionInfo[] oldRegions, RegionInfo[] newRegions)
+        {
             RegionInfo[] patchedRegions = new RegionInfo[oldRegions.Length + newRegions.Length];
             Array.Copy(oldRegions, patchedRegions, oldRegions.Length);
             Array.Copy(newRegions, 0, patchedRegions, oldRegions.Length, newRegions.Length);
 
-            ServerManager.DefaultRegions = patchedRegions;
+            return patchedRegions;
+        }
+        
+        private static RegionInfo[] LoadCustomRegions()
+        {
+            List<RegionInfo> customRegions = new List<RegionInfo>();
+            
+            for (int x = 0; x < 5; x++)
+            {
+                ConfigEntry<string> regionName = UnifyPlugin.ConfigFile.Bind($"Region {x + 1}", $"Name", "custom region");
+                ConfigEntry<string> regionIp = UnifyPlugin.ConfigFile.Bind($"Region {x + 1}", "IP", "");
+                ConfigEntry<ushort> regionPort = UnifyPlugin.ConfigFile.Bind($"Region {x + 1}", "Port", (ushort) 22023);
+                
+                if (String.IsNullOrWhiteSpace(regionIp.Value)) continue;
+
+                RegionInfo regionInfo = new RegionInfo(regionName.Value, regionIp.Value, new ServerInfo[]
+                {
+                    new ServerInfo($"{regionName.Value}-Master-1", regionIp.Value, regionPort.Value)
+                });
+                
+                customRegions.Add(regionInfo);
+            }
+
+            return customRegions.ToArray();
         }
     }
 }
