@@ -1,47 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BepInEx.Configuration;
-using HarmonyLib;
+using Array = System.Array;
+using String = System.String;
 
 namespace Unify.Patches
 {
-    [HarmonyPatch]
     public static class RegionsPatch
     {
+        private static IRegionInfo[] _newRegions = new IRegionInfo[]
+        {
+            new StaticRegionInfo("skeld.net", StringNames.NoTranslation, "192.241.154.115", new ServerInfo[]
+            {
+                new ServerInfo("skeld.net-Master-1", "192.241.154.115", 22023)
+            }).Duplicate(),
+            new StaticRegionInfo("localhost", StringNames.NoTranslation, "127.0.0.1", new ServerInfo[]
+            {
+                new ServerInfo("localhost", "127.0.0.1", 22023)
+            }).Duplicate()
+        };
+        private static IRegionInfo[] _customRegions = MergeRegions(_newRegions, LoadCustomRegions());
+        
         public static void Patch()
         {
-            RegionInfo[] newRegions = new RegionInfo[]
-            {
-                new RegionInfo("skeld.net", "192.241.154.115", new ServerInfo[]
-                {
-                    new ServerInfo("skeld.net-Master-1", "192.241.154.115", 22023)
-                }),
-                new RegionInfo("localhost", "127.0.0.1", new ServerInfo[]
-                {
-                    new ServerInfo("localhost-Master-1", "127.0.0.1", 22023)
-                })
-            };
+            IRegionInfo[] patchedRegions = MergeRegions(ServerManager.DefaultRegions, _customRegions);
             
-            RegionInfo[] customRegions = LoadCustomRegions();
-            
-            RegionInfo[] patchedRegions = MergeRegions(ServerManager.DefaultRegions, newRegions);
-            patchedRegions = MergeRegions(patchedRegions, customRegions);
-
             ServerManager.DefaultRegions = patchedRegions;
+            ServerManager.Instance.AvailableRegions = patchedRegions;
+            ServerManager.Instance.SaveServers();
         }
 
-        private static RegionInfo[] MergeRegions(RegionInfo[] oldRegions, RegionInfo[] newRegions)
+        private static IRegionInfo[] MergeRegions(IRegionInfo[] oldRegions, IRegionInfo[] newRegions)
         {
-            RegionInfo[] patchedRegions = new RegionInfo[oldRegions.Length + newRegions.Length];
+            IRegionInfo[] patchedRegions = new IRegionInfo[oldRegions.Length + newRegions.Length];
             Array.Copy(oldRegions, patchedRegions, oldRegions.Length);
             Array.Copy(newRegions, 0, patchedRegions, oldRegions.Length, newRegions.Length);
 
             return patchedRegions;
         }
         
-        private static RegionInfo[] LoadCustomRegions()
+        private static IRegionInfo[] LoadCustomRegions()
         {
-            List<RegionInfo> customRegions = new List<RegionInfo>();
+            List<IRegionInfo> customRegions = new List<IRegionInfo>();
             
             for (int x = 0; x < 5; x++)
             {
@@ -51,10 +50,11 @@ namespace Unify.Patches
                 
                 if (String.IsNullOrWhiteSpace(regionIp.Value)) continue;
 
-                RegionInfo regionInfo = new RegionInfo(regionName.Value, regionIp.Value, new ServerInfo[]
-                {
-                    new ServerInfo($"{regionName.Value}-Master-1", regionIp.Value, regionPort.Value)
-                });
+                IRegionInfo regionInfo = new StaticRegionInfo(
+                    regionName.Value, StringNames.NoTranslation, regionIp.Value, new ServerInfo[] 
+                    {
+                        new ServerInfo(regionName.Value, regionIp.Value, regionPort.Value)
+                    }).Duplicate();
                 
                 customRegions.Add(regionInfo);
             }
