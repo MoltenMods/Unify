@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Configuration;
+using BepInEx.Preloader.Core;
+using HarmonyLib;
+using UnityEngine;
 using Array = System.Array;
 using String = System.String;
 
@@ -9,21 +13,17 @@ namespace Unify.Patches
     {
         private static IRegionInfo[] _newRegions = new IRegionInfo[]
         {
-            new StaticRegionInfo("skeld.net", StringNames.NoTranslation, "192.241.154.115", new ServerInfo[]
-            {
-                new ServerInfo("skeld.net-Master-1", "192.241.154.115", 22023)
-            }).Duplicate(),
-            new StaticRegionInfo("localhost", StringNames.NoTranslation, "127.0.0.1", new ServerInfo[]
-            {
-                new ServerInfo("localhost", "127.0.0.1", 22023)
-            }).Duplicate()
+            new DnsRegionInfo("192.241.154.115", "skeld.net", StringNames.NoTranslation, "192.241.154.115")
+                .Duplicate(),
+            new DnsRegionInfo("localhost", "localhost", StringNames.NoTranslation, "127.0.0.1")
+                .Duplicate()
         };
-        private static IRegionInfo[] _customRegions = MergeRegions(_newRegions, LoadCustomRegions());
+        private static IRegionInfo[] _customRegions = MergeRegions(_newRegions, LoadCustomUserRegions());
         
         public static void Patch()
         {
             IRegionInfo[] patchedRegions = MergeRegions(ServerManager.DefaultRegions, _customRegions);
-            
+
             ServerManager.DefaultRegions = patchedRegions;
             ServerManager.Instance.AvailableRegions = patchedRegions;
             ServerManager.Instance.SaveServers();
@@ -38,23 +38,22 @@ namespace Unify.Patches
             return patchedRegions;
         }
         
-        private static IRegionInfo[] LoadCustomRegions()
+        private static IRegionInfo[] LoadCustomUserRegions()
         {
             List<IRegionInfo> customRegions = new List<IRegionInfo>();
             
             for (int x = 0; x < 5; x++)
             {
-                ConfigEntry<string> regionName = UnifyPlugin.ConfigFile.Bind($"Region {x + 1}", $"Name", "custom region");
-                ConfigEntry<string> regionIp = UnifyPlugin.ConfigFile.Bind($"Region {x + 1}", "IP", "");
-                ConfigEntry<ushort> regionPort = UnifyPlugin.ConfigFile.Bind($"Region {x + 1}", "Port", (ushort) 22023);
-                
+                ConfigEntry<string> regionName = UnifyPlugin.ConfigFile.Bind(
+                    $"Region {x + 1}", $"Name", "custom region");
+                ConfigEntry<string> regionIp = UnifyPlugin.ConfigFile.Bind(
+                    $"Region {x + 1}", "IP", "");
+
                 if (String.IsNullOrWhiteSpace(regionIp.Value)) continue;
 
-                IRegionInfo regionInfo = new StaticRegionInfo(
-                    regionName.Value, StringNames.NoTranslation, regionIp.Value, new ServerInfo[] 
-                    {
-                        new ServerInfo(regionName.Value, regionIp.Value, regionPort.Value)
-                    }).Duplicate();
+                IRegionInfo regionInfo = new DnsRegionInfo(
+                    regionIp.Value, regionName.Value, StringNames.NoTranslation, regionIp.Value)
+                    .Duplicate();
                 
                 customRegions.Add(regionInfo);
             }
