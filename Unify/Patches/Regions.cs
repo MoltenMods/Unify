@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using BepInEx.Configuration;
+using HarmonyLib;
+using UnityEngine;
 using Array = System.Array;
 using String = System.String;
 
@@ -7,23 +9,15 @@ namespace Unify.Patches
 {
     public static class RegionsPatch
     {
-        private static IRegionInfo[] _newRegions = new IRegionInfo[]
+        private static readonly IRegionInfo[] NewRegions = new IRegionInfo[]
         {
             new DnsRegionInfo("192.241.154.115", "skeld.net", StringNames.NoTranslation, "192.241.154.115")
                 .Duplicate(),
             new DnsRegionInfo("localhost", "localhost", StringNames.NoTranslation, "127.0.0.1")
                 .Duplicate()
         };
-        private static IRegionInfo[] _customRegions = MergeRegions(_newRegions, LoadCustomUserRegions());
-        
-        public static void Patch()
-        {
-            IRegionInfo[] patchedRegions = MergeRegions(ServerManager.DefaultRegions, _customRegions);
-
-            ServerManager.DefaultRegions = patchedRegions;
-            ServerManager.Instance.AvailableRegions = patchedRegions;
-            ServerManager.Instance.SaveServers();
-        }
+        private static readonly IRegionInfo[] CustomRegions = MergeRegions(NewRegions, LoadCustomUserRegions());
+        private static readonly IRegionInfo[] PatchedRegions = MergeRegions(ServerManager.DefaultRegions, CustomRegions);
 
         private static IRegionInfo[] MergeRegions(IRegionInfo[] oldRegions, IRegionInfo[] newRegions)
         {
@@ -55,6 +49,20 @@ namespace Unify.Patches
             }
 
             return customRegions.ToArray();
+        }
+
+        [HarmonyPatch(typeof(ServerManager), nameof(ServerManager.Awake))]
+        public static class AddRegionsPatch
+        {
+            public static void Prefix(ServerManager __instance)
+            {
+                ServerManager.DefaultRegions = PatchedRegions;
+                
+                // ServerManager.AvailableRegions
+                __instance.JIJNOHCGPHM = PatchedRegions;
+                
+                __instance.SaveServers();
+            }
         }
     }
 }
