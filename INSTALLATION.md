@@ -3,7 +3,6 @@
 # Table of Contents
 - [Locating the Among Us game files directory](#locating-the-among-us-game-files-directory)
 - [Installing BepInEx](#installing-bepinex)
-- [Installing Reactor](#installing-reactor)
 
 ## Locating the Among Us game files directory
 
@@ -35,9 +34,9 @@ library then selecting `Manage > Browse local files`.
 └── winhttp.dll
 ```
 
-3. Launch the game so that BepInEx can generate the necessary files, 
-   then close the game after. The Among Us game files should now look 
-   something like this:
+3. Launch the game so that BepInEx can generate the necessary files
+   (this may take a while), then close the game after. The Among Us game
+   files should now look something like this:
    
 ```
 .
@@ -61,17 +60,3 @@ library then selecting `Manage > Browse local files`.
 ├── UnityPlayer.dll
 └── winhttp.dll
 ```
-   
-## Installing Reactor
-
-1. Go to the
-   [Reactor CI](https://github.com/NuclearPowered/Reactor/actions)
-   page.
-2. Click on the top workflow run.
-3. Download the `Reactor.dll` artifact.
-4. Move the `Reactor.dll` file to the
-   `(Among Us game files)/BepInEx/plugins` folder.
-5. Launch the game. The top left of the game menu should look
-   something like this:
-   
-![Mod text](images/ModText.jpg)
