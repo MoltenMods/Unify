@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Configuration;
+using HarmonyLib;
+using Hazel.Udp;
+using Reactor;
 using Array = System.Array;
 using String = System.String;
 
@@ -55,6 +59,23 @@ namespace Unify.Patches
             }
 
             return customRegions.ToArray();
+        }
+    }
+
+    [HarmonyPatch(typeof(UdpConnection), nameof(UdpConnection.HandleSend))]
+    public static class DisableModdedHandshakePatch
+    {
+        [HarmonyBefore(new string[] { "gg.reactor.api" })]
+        public static void Prefix()
+        {
+            if (!UnifyPlugin.NormalHandshake.Contains(ServerManager.Instance.CurrentRegion.Name)) return;
+            
+            PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value = false;
+        }
+
+        public static void Postfix()
+        {
+            PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value = true;
         }
     }
 }
