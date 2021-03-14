@@ -22,11 +22,17 @@ The following regions have been added:
 
 > **⚠ WARNING**
 >
-> This mod only has compiled releases for the steam release of the game.
+> This mod is only compatible with the steam release of the game.
 
-> This mod requires you to have BepInEx installed. You can install BepInEx by following [this guide](INSTALLATION.md).
+> This mod requires you to have BepInEx and Reactor installed. You can install BepInEx and Reactor by following [this guide](INSTALLATION.md) or by following the steps on the
+> following two pages: https://docs.reactor.gg/docs/basic/install_bepinex and https://docs.reactor.gg/docs/basic/install_reactor.
 
-1. Ensure that BepInEx is installed (more information above).
+> If you are still using 2020.12.9s and Reactor fails to load, try using the Reactor version located
+> here: https://github.com/NuclearPowered/Reactor/actions/runs/593649307.
+
+> If you are using 2021.3.5s and Reactor fails to load, ensure you have the latest version of Reactor installed.
+
+1. Ensure that BepInEx and Reactor are installed (more information above).
 2. Download the latest mod on the [releases](https://github.com/DaemonBeast/Unify/releases) page.
 3. Move the mod to the `(Among Us game files)/BepInEx/plugins` folder.
 4. Launch the game.
