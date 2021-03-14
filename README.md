@@ -22,7 +22,7 @@ The following regions have been added:
 
 > **⚠ WARNING**
 >
-> This mod only has compiled releases for the steam release of the game.
+> This mod is only compatible with the steam release of the game.
 
 > This mod requires you to have BepInEx and Reactor installed. You can install BepInEx and Reactor by following [this guide](INSTALLATION.md) or by following the steps on the
 > following two pages: https://docs.reactor.gg/docs/basic/install_bepinex and https://docs.reactor.gg/docs/basic/install_reactor.
