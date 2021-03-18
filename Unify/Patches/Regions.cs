@@ -16,6 +16,8 @@ namespace Unify.Patches
             new DnsRegionInfo("192.241.154.115", "skeld.net", StringNames.NoTranslation, "192.241.154.115")
                 .Duplicate(),
             new DnsRegionInfo("localhost", "localhost", StringNames.NoTranslation, "127.0.0.1")
+                .Duplicate(),
+            new DnsRegionInfo("152.228.160.91", "matux.fr", StringNames.NoTranslation, "152.228.160.91")
                 .Duplicate()
         };
         private static IRegionInfo[] _customRegions = MergeRegions(_newRegions, LoadCustomUserRegions());
