@@ -1,6 +1,3 @@
-﻿> The 2021.3.5s release of this mod requires you to compile an in-development version of Impostor
-> [here](https://github.com/Impostor/Impostor/tree/2021.3.5) if you want to host a local server.
-
 # Unify
 
 An Among Us mod to add extra regions to the regions menu.
