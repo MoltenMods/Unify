@@ -11,35 +11,30 @@ namespace Unify.Patches
 {
     public static class RegionsPatch
     {
+        private static IRegionInfo[] _oldRegions = ServerManager.DefaultRegions;
         private static IRegionInfo[] _newRegions = new IRegionInfo[]
         {
             new DnsRegionInfo("192.241.154.115", "skeld.net", StringNames.NoTranslation, "192.241.154.115")
-                .Duplicate(),
+                .Cast<IRegionInfo>(),
             new DnsRegionInfo("localhost", "localhost", StringNames.NoTranslation, "127.0.0.1")
-                .Duplicate(),
+                .Cast<IRegionInfo>(),
             new DnsRegionInfo("152.228.160.91", "matux.fr", StringNames.NoTranslation, "152.228.160.91")
-                .Duplicate()
+                .Cast<IRegionInfo>()
         };
-        private static IRegionInfo[] _customRegions = MergeRegions(_newRegions, LoadCustomUserRegions());
-        
+
+        public static List<IRegionInfo> ModRegions = new List<IRegionInfo>();
+
         public static void Patch()
         {
-            IRegionInfo[] patchedRegions = MergeRegions(ServerManager.DefaultRegions, _customRegions);
+            IRegionInfo[] customRegions = UnifyPlugin.MergeRegions(_newRegions, ModRegions.ToArray());
+            customRegions = UnifyPlugin.MergeRegions(customRegions, LoadCustomUserRegions());
+            IRegionInfo[] patchedRegions = UnifyPlugin.MergeRegions(_oldRegions, customRegions);
 
             ServerManager.DefaultRegions = patchedRegions;
             ServerManager.Instance.AvailableRegions = patchedRegions;
             ServerManager.Instance.SaveServers();
         }
 
-        private static IRegionInfo[] MergeRegions(IRegionInfo[] oldRegions, IRegionInfo[] newRegions)
-        {
-            IRegionInfo[] patchedRegions = new IRegionInfo[oldRegions.Length + newRegions.Length];
-            Array.Copy(oldRegions, patchedRegions, oldRegions.Length);
-            Array.Copy(newRegions, 0, patchedRegions, oldRegions.Length, newRegions.Length);
-
-            return patchedRegions;
-        }
-        
         private static IRegionInfo[] LoadCustomUserRegions()
         {
             List<IRegionInfo> customRegions = new List<IRegionInfo>();
@@ -55,7 +50,7 @@ namespace Unify.Patches
 
                 IRegionInfo regionInfo = new DnsRegionInfo(
                     regionIp.Value, regionName.Value, StringNames.NoTranslation, regionIp.Value)
-                    .Duplicate();
+                    .Cast<IRegionInfo>();
                 
                 customRegions.Add(regionInfo);
             }
@@ -70,6 +65,7 @@ namespace Unify.Patches
         [HarmonyBefore(new string[] { "gg.reactor.api" })]
         public static void Prefix()
         {
+            if (UnifyPlugin.HandshakeDisabled) return;
             if (!UnifyPlugin.NormalHandshake.Contains(ServerManager.Instance.CurrentRegion.Name)) return;
             
             PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value = false;
@@ -77,6 +73,8 @@ namespace Unify.Patches
 
         public static void Postfix()
         {
+            if (UnifyPlugin.HandshakeDisabled) return;
+            
             PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value = true;
         }
     }
