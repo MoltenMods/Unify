@@ -1,7 +1,4 @@
-﻿> The 2021.3.5s release of this mod requires you to compile an in-development version of Impostor
-> [here](https://github.com/Impostor/Impostor/tree/2021.3.5) if you want to host a local server.
-
-# Unify
+﻿# Unify
 
 An Among Us mod to add extra regions to the regions menu.
 
@@ -17,12 +14,13 @@ An Among Us mod to add extra regions to the regions menu.
 The following regions have been added:
 - [skeld.net](https://skeld.net/)
 - localhost *(for playing on a server running on your computer)*
+- matux.fr
 
 ## Installation
 
 > **⚠ WARNING**
 >
-> This mod is only compatible with the steam release of the game.
+> This mod only has compiled releases for the steam release of the game.
 
 > This mod requires you to have BepInEx and Reactor installed. You can install BepInEx and Reactor by following [this guide](INSTALLATION.md) or by following the steps on the
 > following two pages: https://docs.reactor.gg/docs/basic/install_bepinex and https://docs.reactor.gg/docs/basic/install_reactor.
@@ -53,7 +51,7 @@ The configuration file is located at
 
 Custom regions can be added by modifying the `[Region 1]`,
 `[Region 2]` ... `[Region 5]` sections of the configuration file.
-The sections allow you to modify the display name of the region,
-the IP address of the region, and the port of the region.
+The sections allow you to modify the display name of the region and 
+the IP address of the region.
 
 If the IP field is left empty, the region will not show up in game.
