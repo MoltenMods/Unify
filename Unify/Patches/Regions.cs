@@ -14,11 +14,11 @@ namespace Unify.Patches
         private static IRegionInfo[] _newRegions = new IRegionInfo[]
         {
             new DnsRegionInfo("192.241.154.115", "skeld.net", StringNames.NoTranslation, "192.241.154.115")
-                .Duplicate(),
+                .Cast<IRegionInfo>(),
             new DnsRegionInfo("localhost", "localhost", StringNames.NoTranslation, "127.0.0.1")
-                .Duplicate(),
+                .Cast<IRegionInfo>(),
             new DnsRegionInfo("152.228.160.91", "matux.fr", StringNames.NoTranslation, "152.228.160.91")
-                .Duplicate()
+                .Cast<IRegionInfo>()
         };
         private static IRegionInfo[] _customRegions = MergeRegions(_newRegions, LoadCustomUserRegions());
         
@@ -55,7 +55,7 @@ namespace Unify.Patches
 
                 IRegionInfo regionInfo = new DnsRegionInfo(
                     regionIp.Value, regionName.Value, StringNames.NoTranslation, regionIp.Value)
-                    .Duplicate();
+                    .Cast<IRegionInfo>();
                 
                 customRegions.Add(regionInfo);
             }
