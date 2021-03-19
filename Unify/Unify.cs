@@ -17,7 +17,7 @@ namespace Unify
     {
         public const string Id = "daemon.unify.reactor";
         private const string Name = "Unify";
-        private const string Version = "2.0.3";
+        private const string Version = "2.1.0";
         
         public static readonly ConfigFile ConfigFile =
             new ConfigFile(Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg"), true);
