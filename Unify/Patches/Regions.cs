@@ -70,6 +70,7 @@ namespace Unify.Patches
         [HarmonyBefore(new string[] { "gg.reactor.api" })]
         public static void Prefix()
         {
+            if (UnifyPlugin.HandshakeDisabled) return;
             if (!UnifyPlugin.NormalHandshake.Contains(ServerManager.Instance.CurrentRegion.Name)) return;
             
             PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value = false;
@@ -77,6 +78,8 @@ namespace Unify.Patches
 
         public static void Postfix()
         {
+            if (UnifyPlugin.HandshakeDisabled) return;
+            
             PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value = true;
         }
     }

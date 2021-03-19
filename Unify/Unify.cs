@@ -20,6 +20,8 @@ namespace Unify
         
         public static readonly ConfigFile ConfigFile =
             new ConfigFile(Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg"), true);
+
+        public static readonly bool HandshakeDisabled = !PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value;
         
         public static readonly string[] NormalHandshake =
             new string[] {"North America", "Europe", "Asia", "skeld.net"};
