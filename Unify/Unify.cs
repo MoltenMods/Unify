@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
@@ -33,6 +34,24 @@ namespace Unify
             RegionsPatch.Patch();
 
             Harmony.PatchAll();
+        }
+        
+        public static IRegionInfo[] MergeRegions(IRegionInfo[] oldRegions, IRegionInfo[] newRegions)
+        {
+            IRegionInfo[] patchedRegions = new IRegionInfo[oldRegions.Length + newRegions.Length];
+            Array.Copy(oldRegions, patchedRegions, oldRegions.Length);
+            Array.Copy(newRegions, 0, patchedRegions, oldRegions.Length, newRegions.Length);
+
+            return patchedRegions;
+        }
+
+        public static void AddRegion(string name, string ip)
+        {
+            IRegionInfo newRegion = new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip)
+                .Cast<IRegionInfo>();
+            
+            RegionsPatch.ModRegions.Add(newRegion);
+            RegionsPatch.Patch();
         }
     }
 }

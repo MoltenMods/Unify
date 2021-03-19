@@ -11,6 +11,7 @@ namespace Unify.Patches
 {
     public static class RegionsPatch
     {
+        private static IRegionInfo[] _oldRegions = ServerManager.DefaultRegions;
         private static IRegionInfo[] _newRegions = new IRegionInfo[]
         {
             new DnsRegionInfo("192.241.154.115", "skeld.net", StringNames.NoTranslation, "192.241.154.115")
@@ -20,26 +21,20 @@ namespace Unify.Patches
             new DnsRegionInfo("152.228.160.91", "matux.fr", StringNames.NoTranslation, "152.228.160.91")
                 .Cast<IRegionInfo>()
         };
-        private static IRegionInfo[] _customRegions = MergeRegions(_newRegions, LoadCustomUserRegions());
-        
+
+        public static List<IRegionInfo> ModRegions = new List<IRegionInfo>();
+
         public static void Patch()
         {
-            IRegionInfo[] patchedRegions = MergeRegions(ServerManager.DefaultRegions, _customRegions);
+            IRegionInfo[] customRegions = UnifyPlugin.MergeRegions(_newRegions, ModRegions.ToArray());
+            customRegions = UnifyPlugin.MergeRegions(customRegions, LoadCustomUserRegions());
+            IRegionInfo[] patchedRegions = UnifyPlugin.MergeRegions(_oldRegions, customRegions);
 
             ServerManager.DefaultRegions = patchedRegions;
             ServerManager.Instance.AvailableRegions = patchedRegions;
             ServerManager.Instance.SaveServers();
         }
 
-        private static IRegionInfo[] MergeRegions(IRegionInfo[] oldRegions, IRegionInfo[] newRegions)
-        {
-            IRegionInfo[] patchedRegions = new IRegionInfo[oldRegions.Length + newRegions.Length];
-            Array.Copy(oldRegions, patchedRegions, oldRegions.Length);
-            Array.Copy(newRegions, 0, patchedRegions, oldRegions.Length, newRegions.Length);
-
-            return patchedRegions;
-        }
-        
         private static IRegionInfo[] LoadCustomUserRegions()
         {
             List<IRegionInfo> customRegions = new List<IRegionInfo>();
