@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
+using BepInEx.Logging;
 using HarmonyLib;
 using Reactor;
 using Unify.Patches;
@@ -45,13 +48,52 @@ namespace Unify
             return patchedRegions;
         }
 
-        public static void AddRegion(string name, string ip)
+        public static IRegionInfo AddRegion(string name, string ip)
         {
+            if (Uri.CheckHostName(ip) != UriHostNameType.IPv4) return ServerManager.Instance.CurrentRegion;
+
+            IRegionInfo existingRegion =
+                ServerManager.DefaultRegions.ToArray().FirstOrDefault(region => region.PingServer == ip);
+            if (existingRegion != null) return existingRegion;
+            
             IRegionInfo newRegion = new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip)
                 .Cast<IRegionInfo>();
             
             RegionsPatch.ModRegions.Add(newRegion);
             RegionsPatch.Patch();
+
+            return newRegion;
+        }
+
+        public static IRegionInfo SetDirectRegion(string ip)
+        {
+            if (Uri.CheckHostName(ip) != UriHostNameType.IPv4) return ServerManager.Instance.CurrentRegion;
+            
+            IRegionInfo newRegion = new DnsRegionInfo(ip, ip, StringNames.NoTranslation, ip)
+                .Cast<IRegionInfo>();
+
+            RegionsPatch.DirectRegion = newRegion;
+            RegionsPatch.Patch();
+
+            return newRegion;
+        }
+
+        public static void SetRegionIp(string ip)
+        {
+            IRegionInfo existingRegion =
+                ServerManager.DefaultRegions.ToArray().FirstOrDefault(region => region.PingServer == ip);
+            if (existingRegion != null) return;
+            
+            RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.Instance;
+            IRegionInfo newRegion = AddRegion(ip, ip);
+
+            // ChatLanguageButton lastRegionButton = regionMenu.ButtonPool.activeChildren[^1].Cast<ChatLanguageButton>();
+
+            // regionMenu.ChooseOption(ServerManager.DefaultRegions[^1]);
+            // regionMenu.ButtonPool.activeChildren[^1].Cast<ChatLanguageButton>().Button.ReceiveClickDown();
+            // lastRegionButton.gameObject.SetActive(true);
+            // lastRegionButton.Button.OnClick.Invoke();
+            regionMenu.ChooseOption(newRegion);
         }
     }
 }
