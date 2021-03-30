@@ -89,7 +89,6 @@ namespace Unify.Patches
 
                 directConnect = Object.Instantiate(joinGameButton.GameIdText, regionMenu.transform);
                 directConnect.gameObject.SetActive(false);
-                directConnect.SetText("");
                 directConnect.IpMode = true;
                 directConnect.characterLimit = 15;
                 directConnect.ClearOnFocus = false;
@@ -101,7 +100,7 @@ namespace Unify.Patches
                 directConnect.transform.localPosition = new Vector3(0, 2 - offset, -100);
             }
         }
-        
+
         [HarmonyPatch(typeof(JoinGameButton), nameof(JoinGameButton.OnClick))]
         public static class DirectConnectEnterButtonPatch
         {
@@ -164,3 +163,11 @@ namespace Unify.Patches
         }
     }
 }
+
+/*
+
+Change GUID
+Change fields to properties
+Change layout of region menu
+
+*/
