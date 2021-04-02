@@ -1,4 +1,4 @@
-﻿> **⚠ WARNING**
+> **⚠ WARNING**
 > 
 > Impostor currently doesn't support the 2021.3.31.3s release of the
 > game, so custom servers will give an outdated error when you try to
