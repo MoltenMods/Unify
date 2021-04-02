@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx.Configuration;
 using HarmonyLib;
-using Hazel.Udp;
-using Reactor;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -18,11 +15,11 @@ namespace Unify.Patches
         
         private static IRegionInfo[] _newRegions = new IRegionInfo[]
         {
-            new DnsRegionInfo("192.241.154.115", "skeld.net", StringNames.NoTranslation, "192.241.154.115")
+            new DnsRegionInfo("192.241.154.115", "skeld.net", StringNames.NoTranslation, "192.241.154.115", 22023)
                 .Cast<IRegionInfo>(),
-            new DnsRegionInfo("localhost", "localhost", StringNames.NoTranslation, "127.0.0.1")
+            new DnsRegionInfo("localhost", "localhost", StringNames.NoTranslation, "127.0.0.1", 22023)
                 .Cast<IRegionInfo>(),
-            new DnsRegionInfo("152.228.160.91", "matux.fr", StringNames.NoTranslation, "152.228.160.91")
+            new DnsRegionInfo("152.228.160.91", "matux.fr", StringNames.NoTranslation, "152.228.160.91", 22023)
                 .Cast<IRegionInfo>()
         };
 
@@ -34,14 +31,16 @@ namespace Unify.Patches
 
         public static void Patch()
         {
+            ServerManager serverManager = DestroyableSingleton<ServerManager>.CMJOLNCMAPD;
+            
             IRegionInfo[] customRegions = UnifyPlugin.MergeRegions(_newRegions, ModRegions.ToArray());
             customRegions = UnifyPlugin.MergeRegions(customRegions, LoadCustomUserRegions());
             if (DirectRegion != null) customRegions = customRegions.AddToArray(DirectRegion);
             IRegionInfo[] patchedRegions = UnifyPlugin.MergeRegions(_oldRegions, customRegions);
 
             ServerManager.DefaultRegions = patchedRegions;
-            ServerManager.Instance.AvailableRegions = patchedRegions;
-            ServerManager.Instance.SaveServers();
+            serverManager.GDOLGIJJLBL = patchedRegions;
+            serverManager.SaveServers();
         }
 
         private static IRegionInfo[] LoadCustomUserRegions()
@@ -58,7 +57,7 @@ namespace Unify.Patches
                 if (String.IsNullOrWhiteSpace(regionIp.Value)) continue;
 
                 IRegionInfo regionInfo = new DnsRegionInfo(
-                    regionIp.Value, regionName.Value, StringNames.NoTranslation, regionIp.Value)
+                    regionIp.Value, regionName.Value, StringNames.NoTranslation, regionIp.Value, 22023)
                     .Cast<IRegionInfo>();
                 
                 customRegions.Add(regionInfo);
@@ -70,22 +69,26 @@ namespace Unify.Patches
         private static void UpdateRegion()
         {
             RegionMenu regionMenu = GameObject.Find("RegionMenu").GetComponent<RegionMenu>();
-                
-            IRegionInfo newRegion = UnifyPlugin.SetDirectRegion(directConnect.text);
-                
+            
+            bool success = UnifyPlugin.SetDirectRegion(directConnect.text, out IRegionInfo newRegion);
+
+            if (!success)
+            {
+                directConnect.StartCoroutine(HLPCBNMDEHF.FIJHCJMBGFP(directConnect.transform, 0.75f, 0.25f));
+                return;
+            }
+            
             regionMenu.ChooseOption(newRegion);
             regionMenu.Close();
         }
         
-        [HarmonyPatch(typeof(NameTextBehaviour), nameof(NameTextBehaviour.Start))]
+        [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Open))]
         public static class DirectConnectButtonPatch
         {
             public static void Postfix()
             {
-                if (directConnect) return;
-
-                JoinGameButton joinGameButton = DestroyableSingleton<JoinGameButton>.Instance;
-                RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.Instance;
+                JoinGameButton joinGameButton = DestroyableSingleton<JoinGameButton>.CMJOLNCMAPD;
+                RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.CMJOLNCMAPD;
 
                 directConnect = Object.Instantiate(joinGameButton.GameIdText, regionMenu.transform);
                 directConnect.gameObject.SetActive(false);
@@ -96,8 +99,27 @@ namespace Unify.Patches
                 directConnect.OnEnter = new Button.ButtonClickedEvent();
                 directConnect.OnEnter.AddListener((Action) UpdateRegion);
 
-                float offset = (float) 0.5 * ServerManager.DefaultRegions.Length;
-                directConnect.transform.localPosition = new Vector3(0, 2 - offset, -100);
+                int offset = ((ServerManager.DefaultRegions.Length + 1) / 2) + 1;
+                directConnect.transform.localPosition = new Vector3(0, 2f - (offset / 2f), -100f);
+            }
+        }
+
+        [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Open))]
+        public static class RegionMenuLayoutPatch
+        {
+            public static void Postfix(RegionMenu __instance)
+            {
+                directConnect.gameObject.SetActive(true);
+                
+                var regionButtons = __instance.ButtonPool.activeChildren.ToArray();
+                int half = regionButtons.Length / 2;
+                
+                for (int x = 0; x < regionButtons.Length; x++)
+                {
+                    ServerListButton regionButton = regionButtons[x].Cast<ServerListButton>();
+
+                    regionButton.transform.localPosition = new Vector3(1.25f * ((x < half)? -1: 1), 2f - 0.5f * (x - ((x < half)? 0 : half)), 0f);
+                }
             }
         }
 
@@ -115,15 +137,6 @@ namespace Unify.Patches
             }
         }
 
-        [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Open))]
-        public static class ShowDirectConnectPatch
-        {
-            public static void Postfix()
-            {
-                directConnect.gameObject.SetActive(true);
-            }
-        }
-        
         [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Close))]
         public static class HideDirectConnectPatch
         {
@@ -133,7 +146,7 @@ namespace Unify.Patches
             }
         }
 
-        [HarmonyPatch(typeof(ServerManager), nameof(ServerManager.SaveServers))]
+        [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.ChooseOption))]
         public static class HideDirectConnectOnSelectPatch
         {
             public static void Postfix()
@@ -143,7 +156,7 @@ namespace Unify.Patches
         }
     }
 
-    [HarmonyPatch(typeof(UdpConnection), nameof(UdpConnection.HandleSend))]
+    /*[HarmonyPatch(typeof(UdpConnection), nameof(UdpConnection.HandleSend))]
     public static class DisableModdedHandshakePatch
     {
         [HarmonyBefore(new string[] { "gg.reactor.api" })]
@@ -161,13 +174,12 @@ namespace Unify.Patches
             
             PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value = true;
         }
-    }
+    }*/
 }
 
 /*
 
-Change GUID
 Change fields to properties
-Change layout of region menu
+Change how custom region is detected
 
 */

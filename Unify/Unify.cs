@@ -5,40 +5,48 @@ using System.Text.RegularExpressions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
-using BepInEx.Logging;
 using HarmonyLib;
-using Reactor;
 using Unify.Patches;
 
 namespace Unify
 {
     [BepInPlugin(Id, Name, Version)]
     [BepInProcess("Among Us.exe")]
-    [BepInDependency(ReactorPlugin.Id)]
-    [ReactorPluginSide(PluginSide.ClientOnly)]
     public class UnifyPlugin : BasePlugin
     {
-        public const string Id = "daemon.unify.reactor";
+        public const string Id = "daemon.unify";
         private const string Name = "Unify";
-        private const string Version = "2.1.0";
-        
-        public static readonly ConfigFile ConfigFile =
-            new ConfigFile(Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg"), true);
+        private const string Version = "3.0.0-pre.1";
 
-        public static readonly bool HandshakeDisabled = !PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value;
+        public static ConfigFile ConfigFile;
+
+        // public static readonly bool HandshakeDisabled = !PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value;
         
-        public static readonly string[] NormalHandshake =
-            new string[] {"North America", "Europe", "Asia", "skeld.net"};
+        /*public static readonly string[] NormalHandshake =
+            new string[] {"North America", "Europe", "Asia", "skeld.net"};*/
 
         public Harmony Harmony { get; } = new Harmony(Id);
 
         public override void Load()
         {
+            // ===== For compatibility reasons =====
+            string oldConfigPath = Path.Combine(Paths.ConfigPath, "daemon.unify.reactor.cfg");
+            string newConfigPath = Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg");
+            bool oldConfigExists = File.Exists(oldConfigPath);
+            if (oldConfigExists)
+            {
+                File.Copy(oldConfigPath, newConfigPath, true);
+                File.Delete(oldConfigPath);
+            }
+
+            ConfigFile = new ConfigFile(Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg"), true);
+            // =====================================
+            
             RegionsPatch.Patch();
 
             Harmony.PatchAll();
         }
-        
+
         public static IRegionInfo[] MergeRegions(IRegionInfo[] oldRegions, IRegionInfo[] newRegions)
         {
             IRegionInfo[] patchedRegions = new IRegionInfo[oldRegions.Length + newRegions.Length];
@@ -50,13 +58,14 @@ namespace Unify
 
         public static IRegionInfo AddRegion(string name, string ip)
         {
-            if (Uri.CheckHostName(ip) != UriHostNameType.IPv4) return ServerManager.Instance.CurrentRegion;
+            if (Uri.CheckHostName(ip) != UriHostNameType.IPv4)
+                return DestroyableSingleton<ServerManager>.CMJOLNCMAPD.KIDDJMGEOKK;
 
             IRegionInfo existingRegion =
                 ServerManager.DefaultRegions.ToArray().FirstOrDefault(region => region.PingServer == ip);
             if (existingRegion != null) return existingRegion;
             
-            IRegionInfo newRegion = new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip)
+            IRegionInfo newRegion = new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, 22023)
                 .Cast<IRegionInfo>();
             
             RegionsPatch.ModRegions.Add(newRegion);
@@ -65,35 +74,19 @@ namespace Unify
             return newRegion;
         }
 
-        public static IRegionInfo SetDirectRegion(string ip)
+        public static bool SetDirectRegion(string ip, out IRegionInfo newRegion)
         {
-            if (Uri.CheckHostName(ip) != UriHostNameType.IPv4) return ServerManager.Instance.CurrentRegion;
+            newRegion = null;
             
-            IRegionInfo newRegion = new DnsRegionInfo(ip, ip, StringNames.NoTranslation, ip)
+            if (!Regex.IsMatch(ip, @"^(\d{1,3}\.){3}\d{1,3}$")) return false;
+            
+            newRegion = new DnsRegionInfo(ip, ip, StringNames.NoTranslation, ip, 22023)
                 .Cast<IRegionInfo>();
 
             RegionsPatch.DirectRegion = newRegion;
             RegionsPatch.Patch();
 
-            return newRegion;
-        }
-
-        public static void SetRegionIp(string ip)
-        {
-            IRegionInfo existingRegion =
-                ServerManager.DefaultRegions.ToArray().FirstOrDefault(region => region.PingServer == ip);
-            if (existingRegion != null) return;
-            
-            RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.Instance;
-            IRegionInfo newRegion = AddRegion(ip, ip);
-
-            // ChatLanguageButton lastRegionButton = regionMenu.ButtonPool.activeChildren[^1].Cast<ChatLanguageButton>();
-
-            // regionMenu.ChooseOption(ServerManager.DefaultRegions[^1]);
-            // regionMenu.ButtonPool.activeChildren[^1].Cast<ChatLanguageButton>().Button.ReceiveClickDown();
-            // lastRegionButton.gameObject.SetActive(true);
-            // lastRegionButton.Button.OnClick.Invoke();
-            regionMenu.ChooseOption(newRegion);
+            return true;
         }
     }
 }
