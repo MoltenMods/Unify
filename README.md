@@ -1,4 +1,15 @@
-﻿# Unify
+> **⚠ WARNING**
+> 
+> Impostor currently doesn't support the 2021.3.31.3s release of the
+> game, so custom servers will give an outdated error when you try to
+> connect. The 3.0.0-pre.1 release of Unify doesn't use Reactor, since
+> Reactor is currently outdated and Unify will not actually work until
+> Impostor has been updated to support the 2021.3.31.3s release of the
+> game. A new stable version of Unify will be released once Reactor is
+> up-to-date, but it should be functional with or without Reactor once
+> Impostor is up-to-date.
+
+# Unify
 
 An Among Us mod to add extra regions to the regions menu.
 
