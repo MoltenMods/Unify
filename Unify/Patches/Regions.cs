@@ -182,4 +182,3 @@ namespace Unify.Patches
 
 // TODO:
 //  Store custom servers in a JSON file
-//  Mention `AddRegion` method in README

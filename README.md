@@ -27,6 +27,9 @@ Regions can be connected to directly using an IP address.
 Custom regions can be added as detailed below in the
 [configuration](#configuration) section.
 
+Other mods can add regions via the
+`AddRegion(string name, string ip)` method.
+
 ## Installation
 
 > **⚠ WARNING**
@@ -60,7 +63,7 @@ The configuration file is located at
 ### Custom regions
 
 Custom regions can be added by modifying the `[Region 1]`,
-`[Region 2]` ... `[Region 10]` sections of the configuration file.
+`[Region 2]` ... `[Region 9]` sections of the configuration file.
 You can modify the display name of the region,
 the IP address of the region and the port of the region.
 
