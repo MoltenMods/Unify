@@ -20,7 +20,7 @@ namespace Unify
     {
         public const string Id = "daemon.unify";
         private const string Name = "Unify";
-        private const string Version = "3.0.0";
+        private const string Version = "3.0.1";
 
         public static ConfigFile ConfigFile { get; private set; }
 
