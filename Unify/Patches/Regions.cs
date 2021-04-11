@@ -48,7 +48,7 @@ namespace Unify.Patches
         {
             List<IRegionInfo> customRegions = new List<IRegionInfo>();
             
-            for (int x = 0; x < 10; x++)
+            for (int x = 0; x < 9; x++)
             {
                 ConfigEntry<string> regionName = UnifyPlugin.ConfigFile.Bind(
                     $"Region {x + 1}", $"Name", "custom region");
