@@ -6,6 +6,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using HarmonyLib;
+using Hazel.Udp;
 using Reactor;
 using Unify.Patches;
 
@@ -42,7 +43,8 @@ namespace Unify
             
             RegionsPatch.Patch();
             
-            Harmony.UnpatchAll(ReactorPlugin.Id);
+            // Unpatches the modded handshake, because Impostor is STILL not fully updated yet
+            Harmony.Unpatch(typeof(UdpConnection).GetMethod("HandleSend"), HarmonyPatchType.Prefix, ReactorPlugin.Id);
 
             Harmony.PatchAll();
         }

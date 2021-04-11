@@ -102,8 +102,8 @@ namespace Unify.Patches
                 DirectConnect.OnEnter = new Button.ButtonClickedEvent();
                 DirectConnect.OnEnter.AddListener((Action) UpdateRegion);
 
-                int offset = ((ServerManager.DefaultRegions.Length + 1) / 2) + 1;
-                DirectConnect.transform.localPosition = new Vector3(0, 2f - (offset / 2f), -100f);
+                int offset = _newRegions.Length + ModRegions.Count;
+                DirectConnect.transform.localPosition = new Vector3(0, 1f - (offset / 2f), -100f);
             }
         }
 
@@ -115,14 +115,34 @@ namespace Unify.Patches
                 DirectConnect.gameObject.SetActive(true);
                 
                 var regionButtons = __instance.ButtonPool.activeChildren.ToArray();
-                int half = (regionButtons.Length + 1) / 2;
-                
-                for (int x = 0; x < regionButtons.Length; x++)
-                {
-                    ServerListButton regionButton = regionButtons[x].Cast<ServerListButton>();
 
-                    regionButton.transform.localPosition = new Vector3(1.25f * ((x < half)? -1: 1), 2f - 0.5f * (x - ((x < half)? 0 : half)), 0f);
+                for (int i = 0; i < regionButtons.Length; i++)
+                {
+                    ServerListButton regionButton = regionButtons[i].Cast<ServerListButton>();
+
+                    (float x, float y) = CalculatePosition(i);
+                    regionButton.transform.localPosition = new Vector3(1.25f + x, 2f - 0.5f * y, 0f);
                 }
+            }
+
+            private static (float x, float y) CalculatePosition(int index)
+            {
+                // currently broken
+                /*if (DirectRegion != null && ServerManager.DefaultRegions[index].Name == DirectRegion.Name)
+                {
+                    int offset = Math.Max(
+                        Math.Max(LoadCustomUserRegions().Length, _newRegions.Length + ModRegions.Count),
+                        _oldRegions.Length);
+                    return (1.25f, 2f - offset);
+                }*/
+
+                bool isCustomRegion = index >= _oldRegions.Length;
+                bool isCustomUserRegion = index >= _oldRegions.Length + _newRegions.Length + ModRegions.Count;
+                float x = (isCustomRegion ? 3f : 0) + (isCustomUserRegion ? 3f : 0) - 4.25f;
+                float y = index - (isCustomRegion ? _oldRegions.Length : 0) -
+                          (isCustomUserRegion ? _newRegions.Length + ModRegions.Count : 0);
+
+                return (x, y);
             }
         }
 
@@ -162,3 +182,4 @@ namespace Unify.Patches
 
 // TODO:
 //  Store custom servers in a JSON file
+//  Mention `AddRegion` method in README
