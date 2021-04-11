@@ -27,16 +27,17 @@ namespace Unify.Patches
 
         public static IRegionInfo DirectRegion { get; set; }
 
-        private static TextBox directConnect { get; set; }
+        private static TextBox DirectConnect { get; set; }
 
         public static void Patch()
         {
             ServerManager serverManager = ServerManager.Instance;
             
-            IRegionInfo[] customRegions = UnifyPlugin.MergeRegions(_newRegions, ModRegions.ToArray());
-            customRegions = UnifyPlugin.MergeRegions(customRegions, LoadCustomUserRegions());
-            if (DirectRegion != null) customRegions = customRegions.AddToArray(DirectRegion);
-            IRegionInfo[] patchedRegions = UnifyPlugin.MergeRegions(_oldRegions, customRegions);
+            IRegionInfo[] patchedRegions = _oldRegions
+                .AddRangeToArray(_newRegions)
+                .AddRangeToArray(ModRegions.ToArray())
+                .AddRangeToArray(LoadCustomUserRegions());
+            if (DirectRegion != null) patchedRegions = patchedRegions.AddToArray(DirectRegion);
 
             ServerManager.DefaultRegions = patchedRegions;
             serverManager.AvailableRegions = patchedRegions;
@@ -72,11 +73,11 @@ namespace Unify.Patches
         {
             RegionMenu regionMenu = GameObject.Find("RegionMenu").GetComponent<RegionMenu>();
             
-            bool success = UnifyPlugin.SetDirectRegion(directConnect.text, out IRegionInfo newRegion);
+            bool success = UnifyPlugin.SetDirectRegion(DirectConnect.text, out IRegionInfo newRegion);
 
             if (!success)
             {
-                directConnect.StartCoroutine(Effects.FIJHCJMBGFP(directConnect.transform, 0.75f, 0.25f));
+                DirectConnect.StartCoroutine(Effects.FIJHCJMBGFP(DirectConnect.transform, 0.75f, 0.25f));
                 return;
             }
             
@@ -92,17 +93,17 @@ namespace Unify.Patches
                 JoinGameButton joinGameButton = DestroyableSingleton<JoinGameButton>.Instance;
                 RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.Instance;
 
-                directConnect = Object.Instantiate(joinGameButton.GameIdText, regionMenu.transform);
-                directConnect.gameObject.SetActive(false);
-                directConnect.IpMode = true;
-                directConnect.characterLimit = 15;
-                directConnect.ClearOnFocus = false;
+                DirectConnect = Object.Instantiate(joinGameButton.GameIdText, regionMenu.transform);
+                DirectConnect.gameObject.SetActive(false);
+                DirectConnect.IpMode = true;
+                DirectConnect.characterLimit = 15;
+                DirectConnect.ClearOnFocus = false;
 
-                directConnect.OnEnter = new Button.ButtonClickedEvent();
-                directConnect.OnEnter.AddListener((Action) UpdateRegion);
+                DirectConnect.OnEnter = new Button.ButtonClickedEvent();
+                DirectConnect.OnEnter.AddListener((Action) UpdateRegion);
 
                 int offset = ((ServerManager.DefaultRegions.Length + 1) / 2) + 1;
-                directConnect.transform.localPosition = new Vector3(0, 2f - (offset / 2f), -100f);
+                DirectConnect.transform.localPosition = new Vector3(0, 2f - (offset / 2f), -100f);
             }
         }
 
@@ -111,7 +112,7 @@ namespace Unify.Patches
         {
             public static void Postfix(RegionMenu __instance)
             {
-                directConnect.gameObject.SetActive(true);
+                DirectConnect.gameObject.SetActive(true);
                 
                 var regionButtons = __instance.ButtonPool.activeChildren.ToArray();
                 int half = (regionButtons.Length + 1) / 2;
@@ -144,7 +145,7 @@ namespace Unify.Patches
         {
             public static void Postfix()
             {
-                directConnect.gameObject.SetActive(false);
+                DirectConnect.gameObject.SetActive(false);
             }
         }
 
@@ -153,7 +154,7 @@ namespace Unify.Patches
         {
             public static void Postfix()
             {
-                directConnect.gameObject.SetActive(false);
+                DirectConnect.gameObject.SetActive(false);
             }
         }
     }

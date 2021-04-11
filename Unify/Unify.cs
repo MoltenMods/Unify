@@ -23,11 +23,6 @@ namespace Unify
 
         public static ConfigFile ConfigFile { get; private set; }
 
-        // public static readonly bool HandshakeDisabled = !PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value;
-        
-        /*public static readonly string[] NormalHandshake =
-            new string[] {"North America", "Europe", "Asia", "skeld.net"};*/
-
         public Harmony Harmony { get; } = new Harmony(Id);
 
         public override void Load()
@@ -50,15 +45,6 @@ namespace Unify
             Harmony.UnpatchAll(ReactorPlugin.Id);
 
             Harmony.PatchAll();
-        }
-
-        public static IRegionInfo[] MergeRegions(IRegionInfo[] oldRegions, IRegionInfo[] newRegions)
-        {
-            IRegionInfo[] patchedRegions = new IRegionInfo[oldRegions.Length + newRegions.Length];
-            Array.Copy(oldRegions, patchedRegions, oldRegions.Length);
-            Array.Copy(newRegions, 0, patchedRegions, oldRegions.Length, newRegions.Length);
-
-            return patchedRegions;
         }
 
         public static IRegionInfo AddRegion(string name, string ip)
