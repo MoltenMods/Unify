@@ -6,24 +6,23 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using HarmonyLib;
+using Hazel.Udp;
+using Reactor;
 using Unify.Patches;
 
 namespace Unify
 {
     [BepInPlugin(Id, Name, Version)]
     [BepInProcess("Among Us.exe")]
+    [BepInDependency(ReactorPlugin.Id)]
+    [ReactorPluginSide(PluginSide.ClientOnly)]
     public class UnifyPlugin : BasePlugin
     {
         public const string Id = "daemon.unify";
         private const string Name = "Unify";
-        private const string Version = "3.0.0-pre.1";
+        private const string Version = "3.0.1";
 
-        public static ConfigFile ConfigFile;
-
-        // public static readonly bool HandshakeDisabled = !PluginSingleton<ReactorPlugin>.Instance.ModdedHandshake.Value;
-        
-        /*public static readonly string[] NormalHandshake =
-            new string[] {"North America", "Europe", "Asia", "skeld.net"};*/
+        public static ConfigFile ConfigFile { get; private set; }
 
         public Harmony Harmony { get; } = new Harmony(Id);
 
@@ -43,23 +42,16 @@ namespace Unify
             // =====================================
             
             RegionsPatch.Patch();
+            
+            // Unpatches the modded handshake, because Impostor is STILL not fully updated yet
+            Harmony.Unpatch(typeof(UdpConnection).GetMethod("HandleSend"), HarmonyPatchType.Prefix, ReactorPlugin.Id);
 
             Harmony.PatchAll();
         }
 
-        public static IRegionInfo[] MergeRegions(IRegionInfo[] oldRegions, IRegionInfo[] newRegions)
-        {
-            IRegionInfo[] patchedRegions = new IRegionInfo[oldRegions.Length + newRegions.Length];
-            Array.Copy(oldRegions, patchedRegions, oldRegions.Length);
-            Array.Copy(newRegions, 0, patchedRegions, oldRegions.Length, newRegions.Length);
-
-            return patchedRegions;
-        }
-
         public static IRegionInfo AddRegion(string name, string ip)
         {
-            if (Uri.CheckHostName(ip) != UriHostNameType.IPv4)
-                return DestroyableSingleton<ServerManager>.CMJOLNCMAPD.KIDDJMGEOKK;
+            if (Uri.CheckHostName(ip) != UriHostNameType.IPv4) return ServerManager.Instance.CurrentRegion;
 
             IRegionInfo existingRegion =
                 ServerManager.DefaultRegions.ToArray().FirstOrDefault(region => region.PingServer == ip);

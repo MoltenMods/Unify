@@ -1,227 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Version>3.0.0-pre.1</Version>
+        <Version>3.0.1</Version>
+        <Mappings>NuclearPowered/Mappings:0.3.0</Mappings>
 
         <Description>Region mod</Description>
         <Authors>Daemon</Authors>
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(GamePlatform)' == 'Steam'">
+        <GameVersion>2021.3.31.3s</GameVersion>
+        <DefineConstants>$(DefineConstants);STEAM</DefineConstants>
+    </PropertyGroup>
+  
+    <PropertyGroup Condition="'$(GamePlatform)' == 'Itch'">
+        <GameVersion>2021.3.31.3i</GameVersion>
+        <DefineConstants>$(DefineConstants);ITCH</DefineConstants>
+    </PropertyGroup>
+  
     <ItemGroup>
-      <Reference Include="0Harmony, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\core\0Harmony.dll</HintPath>
-      </Reference>
-      <Reference Include="Apple, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Apple.dll</HintPath>
-      </Reference>
-      <Reference Include="AppleCore, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\AppleCore.dll</HintPath>
-      </Reference>
-      <Reference Include="AppleMacos, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\AppleMacos.dll</HintPath>
-      </Reference>
-      <Reference Include="Assembly-CSharp, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Assembly-CSharp.dll</HintPath>
-      </Reference>
-      <Reference Include="Assembly-CSharp-firstpass, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Assembly-CSharp-firstpass.dll</HintPath>
-      </Reference>
-      <Reference Include="BepInEx.Core, Version=6.0.0.353, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\core\BepInEx.Core.dll</HintPath>
-      </Reference>
-      <Reference Include="BepInEx.IL2CPP, Version=6.0.0.353, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\core\BepInEx.IL2CPP.dll</HintPath>
-      </Reference>
-      <Reference Include="FacebookStore, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\FacebookStore.dll</HintPath>
-      </Reference>
-      <Reference Include="Hazel, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Hazel.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppMono.Security, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppMono.Security.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2Cppmscorlib, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2Cppmscorlib.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppSystem, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppSystem.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppSystem.Configuration, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppSystem.Configuration.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppSystem.Core, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppSystem.Core.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppSystem.Data, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppSystem.Data.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppSystem.Net.Http, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppSystem.Net.Http.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppSystem.Numerics, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppSystem.Numerics.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppSystem.Runtime.Serialization, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppSystem.Runtime.Serialization.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppSystem.Xml, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppSystem.Xml.dll</HintPath>
-      </Reference>
-      <Reference Include="Il2CppSystem.Xml.Linq, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Il2CppSystem.Xml.Linq.dll</HintPath>
-      </Reference>
-      <Reference Include="Newtonsoft.Json, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Newtonsoft.Json.dll</HintPath>
-      </Reference>
-      <Reference Include="Purchasing.Common, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Purchasing.Common.dll</HintPath>
-      </Reference>
-      <Reference Include="QRCoder, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\QRCoder.dll</HintPath>
-      </Reference>
-      <Reference Include="Rewired_Core, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Rewired_Core.dll</HintPath>
-      </Reference>
-      <Reference Include="Rewired_Windows, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Rewired_Windows.dll</HintPath>
-      </Reference>
-      <Reference Include="Security, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Security.dll</HintPath>
-      </Reference>
-      <Reference Include="Stores, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Stores.dll</HintPath>
-      </Reference>
-      <Reference Include="UnhollowerBaseLib, Version=0.4.13.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\core\UnhollowerBaseLib.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Addressables, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Unity.Addressables.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Analytics.DataPrivacy, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Unity.Analytics.DataPrivacy.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.ResourceManager, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Unity.ResourceManager.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.TextMeshPro, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\Unity.TextMeshPro.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AIModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.AIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AndroidJNIModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.AndroidJNIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AnimationModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.AnimationModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AssetBundleModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.AssetBundleModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.AudioModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.AudioModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.CoreModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.CoreModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.DirectorModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.DirectorModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.GridModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.GridModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ImageConversionModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.ImageConversionModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.IMGUIModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.IMGUIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.InputLegacyModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.InputLegacyModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.InputModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.InputModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.JSONSerializeModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.JSONSerializeModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ParticleSystemModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.ParticleSystemModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.Physics2DModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.Physics2DModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.PhysicsModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.PhysicsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.Purchasing, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.Purchasing.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.ScreenCaptureModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.ScreenCaptureModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.SharedInternalsModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.SharedInternalsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.SpriteMaskModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.SpriteMaskModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.SpriteShapeModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.SpriteShapeModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.SubsystemsModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.SubsystemsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TerrainModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.TerrainModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TextCoreModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.TextCoreModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TextRenderingModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.TextRenderingModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.TilemapModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.TilemapModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UI, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.UI.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UIElementsNativeModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.UIElementsNativeModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UIModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.UIModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityAnalyticsModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityWebRequestModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.UnityWebRequestModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UnityWebRequestWWWModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.VFXModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.VFXModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.VideoModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.VideoModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.VRModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.VRModule.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.XRModule, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\UnityEngine.XRModule.dll</HintPath>
-      </Reference>
-      <Reference Include="winrt, Version=3.7.1.6, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\Program Files\SteamLibrary\steamapps\common\Among Us\BepInEx\unhollowed\winrt.dll</HintPath>
-      </Reference>
+        <Deobfuscate Include="$(AmongUs)\BepInEx\plugins\Reactor-$(GameVersion).dll" />
     </ItemGroup>
+  
+    <ItemGroup>
+        <PackageReference Include="Reactor.OxygenFilter.MSBuild" Version="0.3.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+  
+    <Target Name="Copy" AfterTargets="Reobfuscate">
+        <Copy SourceFiles="$(OutputPath)reobfuscated/$(AssemblyName)-$(GameVersion).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" />
+        <Copy SourceFiles="$(OutputPath)reobfuscated/$(AssemblyName)-$(GameVersion).dll" DestinationFolder="../build/" />
+    </Target>
 </Project>
