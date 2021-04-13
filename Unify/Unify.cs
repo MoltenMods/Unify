@@ -6,21 +6,17 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using HarmonyLib;
-using Hazel.Udp;
-using Reactor;
 using Unify.Patches;
 
 namespace Unify
 {
     [BepInPlugin(Id, Name, Version)]
     [BepInProcess("Among Us.exe")]
-    [BepInDependency(ReactorPlugin.Id)]
-    [ReactorPluginSide(PluginSide.ClientOnly)]
     public class UnifyPlugin : BasePlugin
     {
         public const string Id = "daemon.unify";
         private const string Name = "Unify";
-        private const string Version = "3.0.1";
+        private const string Version = "4.0.0-pre.1";
 
         public static ConfigFile ConfigFile { get; private set; }
 
@@ -40,18 +36,13 @@ namespace Unify
 
             ConfigFile = new ConfigFile(Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg"), true);
             // =====================================
-            
-            RegionsPatch.Patch();
-            
-            // Unpatches the modded handshake, because Impostor is STILL not fully updated yet
-            Harmony.Unpatch(typeof(UdpConnection).GetMethod("HandleSend"), HarmonyPatchType.Prefix, ReactorPlugin.Id);
 
             Harmony.PatchAll();
         }
 
         public static IRegionInfo AddRegion(string name, string ip)
         {
-            if (Uri.CheckHostName(ip) != UriHostNameType.IPv4) return ServerManager.Instance.CurrentRegion;
+            if (Uri.CheckHostName(ip) != UriHostNameType.IPv4) return ServerManager.CHNDKKBEIDG.HMIJGFFKBNN;
 
             IRegionInfo existingRegion =
                 ServerManager.DefaultRegions.ToArray().FirstOrDefault(region => region.PingServer == ip);
