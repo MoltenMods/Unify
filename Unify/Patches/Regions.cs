@@ -31,7 +31,7 @@ namespace Unify.Patches
 
         public static void Patch()
         {
-            ServerManager serverManager = ServerManager.Instance;
+            ServerManager serverManager = ServerManager.CHNDKKBEIDG;
             
             IRegionInfo[] patchedRegions = _oldRegions
                 .AddRangeToArray(_newRegions)
@@ -40,8 +40,7 @@ namespace Unify.Patches
             if (DirectRegion != null) patchedRegions = patchedRegions.AddToArray(DirectRegion);
 
             ServerManager.DefaultRegions = patchedRegions;
-            serverManager.AvailableRegions = patchedRegions;
-            serverManager.SaveServers();
+            serverManager.AGFAPIKFOFF = patchedRegions;
         }
 
         private static IRegionInfo[] LoadCustomUserRegions()
@@ -84,14 +83,23 @@ namespace Unify.Patches
             regionMenu.ChooseOption(newRegion);
             regionMenu.Close();
         }
+
+        [HarmonyPatch(typeof(ServerManager), nameof(ServerManager.LoadServers))]
+        public static class LoadCustomServersPatch
+        {
+            public static void Postfix()
+            {
+                Patch();
+            }
+        }
         
         [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Open))]
         public static class DirectConnectButtonPatch
         {
             public static void Postfix()
             {
-                JoinGameButton joinGameButton = DestroyableSingleton<JoinGameButton>.Instance;
-                RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.Instance;
+                JoinGameButton joinGameButton = DestroyableSingleton<JoinGameButton>.CHNDKKBEIDG;
+                RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.CHNDKKBEIDG;
 
                 DirectConnect = Object.Instantiate(joinGameButton.GameIdText, regionMenu.transform);
                 DirectConnect.gameObject.SetActive(false);
