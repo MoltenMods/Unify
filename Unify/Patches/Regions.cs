@@ -76,7 +76,7 @@ namespace Unify.Patches
 
             if (!success)
             {
-                DirectConnect.StartCoroutine(AEOEPNHOJDP.EFNBEJGKFFG(DirectConnect.transform, 0.75f, 0.25f));
+                DirectConnect.StartCoroutine(Effects.SwayX(DirectConnect.transform, 0.75f, 0.25f));
                 return;
             }
             
