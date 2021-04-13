@@ -1,9 +1,3 @@
-> **⚠ WARNING**
-> 
-> To play on a custom server on 2021.3.31.3s, you must compile the
-> *airship* branch of Impostor located here:
-> https://github.com/Impostor/Impostor/tree/airship.
-
 # Unify
 
 An Among Us mod to add extra regions to the regions menu.

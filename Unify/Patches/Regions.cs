@@ -27,7 +27,7 @@ namespace Unify.Patches
 
         public static IRegionInfo DirectRegion { get; set; }
 
-        private static TextBox DirectConnect { get; set; }
+        private static TextBoxTMP DirectConnect { get; set; }
 
         public static void Patch()
         {
@@ -77,7 +77,7 @@ namespace Unify.Patches
 
             if (!success)
             {
-                DirectConnect.StartCoroutine(Effects.FIJHCJMBGFP(DirectConnect.transform, 0.75f, 0.25f));
+                DirectConnect.StartCoroutine(Effects.SwayX(DirectConnect.transform, 0.75f, 0.25f));
                 return;
             }
             

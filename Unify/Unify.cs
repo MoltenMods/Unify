@@ -20,7 +20,7 @@ namespace Unify
     {
         public const string Id = "daemon.unify";
         private const string Name = "Unify";
-        private const string Version = "3.0.1";
+        private const string Version = "4.0.0";
 
         public static ConfigFile ConfigFile { get; private set; }
 
@@ -44,7 +44,8 @@ namespace Unify
             RegionsPatch.Patch();
             
             // Unpatches the modded handshake, because Impostor is STILL not fully updated yet
-            Harmony.Unpatch(typeof(UdpConnection).GetMethod("HandleSend"), HarmonyPatchType.Prefix, ReactorPlugin.Id);
+            Harmony.Unpatch(typeof(UdpConnection).GetMethod("HandleSend"), HarmonyPatchType.Prefix, 
+                ReactorPlugin.Id);
 
             Harmony.PatchAll();
         }
