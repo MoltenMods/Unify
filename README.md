@@ -36,8 +36,7 @@ Other mods can add regions via the
 > If you are still using 2021.3.5s and Reactor fails to load, try using the Reactor version located
 > here: https://github.com/NuclearPowered/Reactor/actions/runs/636023321.
 
-1. Ensure that BepInEx and Reactor (Reactor is not required for pre releases) are installed
-   ([installation guide](INSTALLATION.md)).
+1. Ensure that BepInEx and Reactor are installed ([installation guide](INSTALLATION.md)).
 2. Download the latest mod on the [releases](https://github.com/DaemonBeast/Unify/releases) page
    for the version of Among Us you are using.
 3. Move the mod to the `(Among Us game files)/BepInEx/plugins` folder.
