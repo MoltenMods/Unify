@@ -31,7 +31,7 @@ namespace Unify.Patches
 
         public static void Patch()
         {
-            ServerManager serverManager = ServerManager.CHNDKKBEIDG;
+            ServerManager serverManager = ServerManager.Instance;
             
             IRegionInfo[] patchedRegions = _oldRegions
                 .AddRangeToArray(_newRegions)
@@ -40,7 +40,8 @@ namespace Unify.Patches
             if (DirectRegion != null) patchedRegions = patchedRegions.AddToArray(DirectRegion);
 
             ServerManager.DefaultRegions = patchedRegions;
-            serverManager.AGFAPIKFOFF = patchedRegions;
+            serverManager.AvailableRegions = patchedRegions;
+            serverManager.SaveServers();
         }
 
         private static IRegionInfo[] LoadCustomUserRegions()
@@ -85,7 +86,7 @@ namespace Unify.Patches
         }
 
         [HarmonyPatch(typeof(ServerManager), nameof(ServerManager.LoadServers))]
-        public static class LoadCustomServersPatch
+        public static class PatchRegionMenuPatch
         {
             public static void Postfix()
             {
@@ -98,8 +99,8 @@ namespace Unify.Patches
         {
             public static void Postfix()
             {
-                JoinGameButton joinGameButton = DestroyableSingleton<JoinGameButton>.CHNDKKBEIDG;
-                RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.CHNDKKBEIDG;
+                JoinGameButton joinGameButton = DestroyableSingleton<JoinGameButton>.Instance;
+                RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.Instance;
 
                 DirectConnect = Object.Instantiate(joinGameButton.GameIdText, regionMenu.transform);
                 DirectConnect.gameObject.SetActive(false);
