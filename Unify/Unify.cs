@@ -40,9 +40,7 @@ namespace Unify
 
             ConfigFile = new ConfigFile(Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg"), true);
             // =====================================
-            
-            RegionsPatch.Patch();
-            
+
             // Unpatches the modded handshake, because Impostor is STILL not fully updated yet
             Harmony.Unpatch(typeof(UdpConnection).GetMethod("HandleSend"), HarmonyPatchType.Prefix, 
                 ReactorPlugin.Id);

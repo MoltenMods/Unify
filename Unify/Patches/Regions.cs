@@ -84,6 +84,15 @@ namespace Unify.Patches
             regionMenu.ChooseOption(newRegion);
             regionMenu.Close();
         }
+
+        [HarmonyPatch(typeof(ServerManager), nameof(ServerManager.LoadServers))]
+        public static class PatchRegionMenuPatch
+        {
+            public static void Postfix()
+            {
+                Patch();
+            }
+        }
         
         [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Open))]
         public static class DirectConnectButtonPatch
