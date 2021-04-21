@@ -20,7 +20,7 @@ namespace Unify
     {
         public const string Id = "daemon.unify";
         private const string Name = "Unify";
-        private const string Version = "4.0.1";
+        private const string Version = "4.1.0";
 
         public static ConfigFile ConfigFile { get; private set; }
 
@@ -48,7 +48,7 @@ namespace Unify
             Harmony.PatchAll();
         }
 
-        public static IRegionInfo AddRegion(string name, string ip)
+        public static IRegionInfo AddRegion(string name, string ip, ushort port)
         {
             if (Uri.CheckHostName(ip) != UriHostNameType.IPv4) return ServerManager.Instance.CurrentRegion;
 
@@ -56,7 +56,7 @@ namespace Unify
                 ServerManager.DefaultRegions.ToArray().FirstOrDefault(region => region.PingServer == ip);
             if (existingRegion != null) return existingRegion;
             
-            IRegionInfo newRegion = new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, 22023)
+            IRegionInfo newRegion = new DnsRegionInfo(ip, $"{name}\n{ip}   {port}", StringNames.NoTranslation, ip, port)
                 .Cast<IRegionInfo>();
             
             RegionsPatch.ModRegions.Add(newRegion);

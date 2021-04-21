@@ -22,7 +22,7 @@ Custom regions can be added as detailed below in the
 [configuration](#configuration) section.
 
 Other mods can add regions via the
-`AddRegion(string name, string ip)` method.
+`AddRegion(string name, string ip, ushort port)` method.
 
 ## Installation
 
