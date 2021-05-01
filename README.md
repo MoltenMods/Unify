@@ -1,8 +1,9 @@
 # Unify
 
-An Among Us mod to add extra regions to the regions menu.
+An Among Us mod to add extra regions to the region menu.
 
-![Regions menu](images/RegionsMenu.png)
+![Region menu](images/RegionsMenu.png)
+![Region menu editor](images/RegionsMenuEditor.png)
 
 # Table of Contents
 - [Features](#features)
@@ -15,6 +16,7 @@ The following regions have been added:
 - [skeld.net](https://skeld.net/)
 - localhost *(for playing on a server running on your computer)*
 - matux.fr
+- Przebot (may be unreliable or outdated)
 
 Regions can be connected to directly using an IP address.
 
@@ -22,7 +24,7 @@ Custom regions can be added as detailed below in the
 [configuration](#configuration) section.
 
 Other mods can add regions via the
-`AddRegion(string name, string ip, ushort port)` method.
+`AddRegion(string name, string ip, ushort port)` API method.
 
 ## Installation
 

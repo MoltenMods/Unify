@@ -8,6 +8,7 @@ using BepInEx.IL2CPP;
 using HarmonyLib;
 using Hazel.Udp;
 using Reactor;
+using Unify.Controls;
 using Unify.Patches;
 
 namespace Unify
@@ -20,32 +21,33 @@ namespace Unify
     {
         public const string Id = "daemon.unify";
         private const string Name = "Unify";
-        private const string Version = "4.1.0";
+        private const string Version = "4.2.0";
 
         public static ConfigFile ConfigFile { get; private set; }
+
+        internal static ConfigEntry<bool> ShowOfficialRegions;
+        internal static ConfigEntry<bool> ShowExtraRegions;
 
         public Harmony Harmony { get; } = new Harmony(Id);
 
         public override void Load()
         {
-            // ===== For compatibility reasons =====
-            string oldConfigPath = Path.Combine(Paths.ConfigPath, "daemon.unify.reactor.cfg");
-            string newConfigPath = Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg");
-            bool oldConfigExists = File.Exists(oldConfigPath);
-            if (oldConfigExists)
-            {
-                File.Copy(oldConfigPath, newConfigPath, true);
-                File.Delete(oldConfigPath);
-            }
-
-            ConfigFile = new ConfigFile(Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg"), true);
-            // =====================================
+            FixCompatibility();
+            
+            ShowOfficialRegions = ConfigFile.Bind("Preferences", "Show Official Regions", true, 
+                "If the official regions should be shown when displaying the regions menu");
+            ShowExtraRegions = ConfigFile.Bind("Preferences", "Show Extra Regions", true,
+                "If the extra regions added by default in Unify should be shown when displaying the regions menu");
 
             // Unpatches the modded handshake, because Impostor is STILL not fully updated yet
             Harmony.Unpatch(typeof(UdpConnection).GetMethod("HandleSend"), HarmonyPatchType.Prefix, 
                 ReactorPlugin.Id);
 
             Harmony.PatchAll();
+            
+            Button.InitializeBaseButton();
+            // Popup.InitializeBasePopup();
+            RegionsEditor.SetUp();
         }
 
         public static IRegionInfo AddRegion(string name, string ip, ushort port)
@@ -56,7 +58,7 @@ namespace Unify
                 ServerManager.DefaultRegions.ToArray().FirstOrDefault(region => region.PingServer == ip);
             if (existingRegion != null) return existingRegion;
             
-            IRegionInfo newRegion = new DnsRegionInfo(ip, $"{name}\n{ip}   {port}", StringNames.NoTranslation, ip, port)
+            IRegionInfo newRegion = new DnsRegionInfo(ip, name, StringNames.NoTranslation, ip, port)
                 .Cast<IRegionInfo>();
             
             RegionsPatch.ModRegions.Add(newRegion);
@@ -78,6 +80,20 @@ namespace Unify
             RegionsPatch.Patch();
 
             return true;
+        }
+
+        private static void FixCompatibility()
+        {
+            string oldConfigPath = Path.Combine(Paths.ConfigPath, "daemon.unify.reactor.cfg");
+            string newConfigPath = Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg");
+            bool oldConfigExists = File.Exists(oldConfigPath);
+            if (oldConfigExists)
+            {
+                File.Copy(oldConfigPath, newConfigPath, true);
+                File.Delete(oldConfigPath);
+            }
+
+            ConfigFile = new ConfigFile(Path.Combine(Paths.ConfigPath, $"{UnifyPlugin.Id}.cfg"), true);
         }
     }
 }
