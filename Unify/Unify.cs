@@ -21,7 +21,7 @@ namespace Unify
     {
         public const string Id = "daemon.unify";
         private const string Name = "Unify";
-        private const string Version = "4.2.0";
+        private const string Version = "5.0.0";
 
         public static ConfigFile ConfigFile { get; private set; }
 
@@ -46,7 +46,6 @@ namespace Unify
             Harmony.PatchAll();
             
             Button.InitializeBaseButton();
-            // Popup.InitializeBasePopup();
             RegionsEditor.SetUp();
         }
 
