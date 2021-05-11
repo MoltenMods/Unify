@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Reactor.Extensions;
-using Unify.Controls;
 using UnityEngine;
 using Button = UnityEngine.UI.Button;
 using Object = UnityEngine.Object;
@@ -130,11 +130,12 @@ namespace Unify.Patches
 
             internal static void RefreshRegionMenu()
             {
+                if (!GameObject.Find("RegionMenu")) return;
+                
                 var regionButtons = DestroyableSingleton<RegionMenu>.Instance.ButtonPool.activeChildren.ToArray();
                 var defaultRegions = ServerManager.DefaultRegions;
                 var showOfficials = UnifyPlugin.ShowOfficialRegions.Value;
                 var showExtras = UnifyPlugin.ShowExtraRegions.Value;
-                var firstCustomRegionIndex = OldRegions.Length + NewRegions.Length + ModRegions.Count;
 
                 for (int i = 0; i < regionButtons.Length; i++)
                 {
@@ -144,10 +145,12 @@ namespace Unify.Patches
                     var textTranslatorTemp = regionButton.GetComponentInChildren<TextTranslatorTMP>();
                     if (textTranslatorTemp) textTranslatorTemp.Destroy();
 
+                    int extraRegionCount = OldRegions.Length + NewRegions.Length + ModRegions.Count;
                     bool isCustomRegion = i >= OldRegions.Length;
-                    bool isCustomUserRegion = i >= OldRegions.Length + NewRegions.Length + ModRegions.Count;
+                    bool isCustomUserRegion = i >= extraRegionCount;
                     float x = (!isCustomRegion && !showExtras ? 3f : 0) + (isCustomRegion ? 3f : 0) +
-                        (isCustomUserRegion ? 3f : 0) - 4.25f - (showOfficials ? 0 : 1.5f) - (showExtras ? 0 : 1.5f);
+                        (isCustomUserRegion ? 3f : 0) - 4.25f - (!showOfficials || OldRegions.Length == 0 ? 1.5f : 0) -
+                        (!showExtras || extraRegionCount == 0 ? 1.5f : 0);
                     float y = i - (isCustomRegion ? OldRegions.Length : 0) - 
                               (isCustomUserRegion ? NewRegions.Length + ModRegions.Count : 0);
 
@@ -177,17 +180,14 @@ namespace Unify.Patches
                         regionButton.Text.text = 
                             RegionsEditor.IsActive ? $"{region.Name}\n{region.PingServer}   {region.Servers[0].Port}" :
                                 region.Name;
-
-                        if (i != firstCustomRegionIndex) continue;
-                        
-                        PositionMoveButton(RegionsEditor.MoveUpButton, regionButtonPosition);
-                        PositionMoveButton(RegionsEditor.MoveDownButton, regionButtonPosition, -0.5f);
                     }
                 }
             }
 
             internal static void RefreshDirectConnectButton()
             {
+                if (!GameObject.Find("RegionMenu")) return;
+                
                 if (DirectConnect) DirectConnect.gameObject.Destroy();
 
                 RegionMenu regionMenu = DestroyableSingleton<RegionMenu>.Instance;
@@ -195,6 +195,7 @@ namespace Unify.Patches
 
                 DirectConnect = Object.Instantiate(joinGameButton.GameIdText, regionMenu.transform);
                 DirectConnect.GetComponentInChildren<TextTranslatorTMP>().Destroy();
+                DirectConnect.GetComponent<JoinGameButton>().Destroy();
                 DirectConnect.outputText.text = "Enter IP";
                 DirectConnect.IpMode = true;
                 DirectConnect.characterLimit = 15;
@@ -206,12 +207,6 @@ namespace Unify.Patches
                 int offset = NewRegions.Length + ModRegions.Count;
                 DirectConnect.transform.localPosition = new Vector3(0, 1f - (offset / 2f), -100f);
             }
-
-            private static void PositionMoveButton(Controls.Button button, Vector3 regionButtonPosition, float yOffset=0)
-            {
-                button.GameObject.transform.localPosition = 
-                    new Vector3(regionButtonPosition.x + 1.45f, regionButtonPosition.y + yOffset, -100f);
-            }
         }
     }
     
@@ -222,75 +217,51 @@ namespace Unify.Patches
         private static Controls.Button _toggleOfficialsButton;
         private static Controls.Button _toggleExtrasButton;
 
-        private static Controls.Button _addRegionButton;
-        
-        internal static Controls.Button MoveUpButton;
-        internal static Controls.Button MoveDownButton;
-
-        private static Popup _addRegionPopup;
-
         internal static bool IsActive;
 
-        public static async void SetUp()
+        internal static async void SetUp()
         {
-            _addRegionPopup = await Popup.Create("Some text");
-            
-            Controls.Button.Create("Edit", new Vector2(0.8f, 0.4f), new Vector2(0.5f, 0.3f), SetUpSwitchButton);
-            
-            Controls.Button.Create("Toggle Official Regions", new Vector2(2f, 0.4f), new Vector2(1.1f, 1.3f),
-                SetUpToggleOfficialsButton);
-            Controls.Button.Create("Toggle Extra Regions", new Vector2(2f, 0.4f), new Vector2(1.1f, 1.8f),
-                SetUpToggleExtrasButton);
-
-            Controls.Button.Create("Add Region", new Vector2(2f, 0.4f), new Vector2(1.1f, 2.3f), SetUpAddRegionButton);
-            
-            Controls.Button.Create("↑", new Vector2(0.4f, 0.4f), Vector2.zero, SetUpMoveUpButton);
-            Controls.Button.Create("↓", new Vector2(0.4f, 0.4f), Vector2.zero, SetUpMoveDownButton);
+            await SetUpSwitchButton();
+            await SetUpToggleOfficialsButton();
+            await SetUpToggleExtrasButton();
         }
-        
-        public static void ShowRegionsEditor()
+
+        private static void SetRegionsEditorVisibility(bool visible)
         {
-            IsActive = true;
-            _switchButton.Text.text = "Back";
-            _toggleOfficialsButton.GameObject.SetActive(true);
-            _toggleExtrasButton.GameObject.SetActive(true);
-            /*MoveUpButton.GameObject.SetActive(true);
-            MoveDownButton.GameObject.SetActive(true);
-            _addRegionButton.GameObject.SetActive(true);*/
+            IsActive = visible;
+            _toggleOfficialsButton.GameObject.SetActive(visible);
+            _toggleExtrasButton.GameObject.SetActive(visible);
             
             RegionsPatch.RegionMenuPatches.RefreshRegionMenu();
-            RegionsPatch.DirectConnect.gameObject.SetActive(false);
+
+            if (visible)
+            {
+                _switchButton.Text.text = "Back";
+                RegionsPatch.DirectConnect.gameObject.SetActive(false);
+            }
+            else
+            {
+                _switchButton.Text.text = "Edit";
+                RegionsPatch.RegionMenuPatches.RefreshDirectConnectButton();
+            }
         }
 
-        public static void HideRegionsEditor()
+        private static async Task SetUpSwitchButton()
         {
-            IsActive = false;
-            _switchButton.Text.text = "Edit";
-            _toggleOfficialsButton.GameObject.SetActive(false);
-            _toggleExtrasButton.GameObject.SetActive(false);
-            /*MoveUpButton.GameObject.SetActive(false);
-            MoveDownButton.GameObject.SetActive(false);
-            _addRegionButton.GameObject.SetActive(false);*/
-
-            RegionsPatch.RegionMenuPatches.RefreshRegionMenu();
-            RegionsPatch.RegionMenuPatches.RefreshDirectConnectButton();
-        }
-
-        private static void SetUpSwitchButton(Controls.Button button)
-        {
-            _switchButton = button;
-
+            _switchButton = await Controls.Button.Create("Edit");
+            _switchButton.SetSize(new Vector2(0.8f, 0.4f)).SetDistanceFromEdge(new Vector2(0.5f, 0.3f));
+                
             _switchButton.OnClick.AddListener((Action) (() =>
             {
-                if (IsActive) HideRegionsEditor();
-                else ShowRegionsEditor();
+                SetRegionsEditorVisibility(!IsActive);
             }));
         }
 
-        private static void SetUpToggleOfficialsButton(Controls.Button button)
+        private static async Task SetUpToggleOfficialsButton()
         {
-            _toggleOfficialsButton = button;
-
+            _toggleOfficialsButton = await Controls.Button.Create("Toggle Official Regions");
+            _toggleOfficialsButton.SetSize(new Vector2(2f, 0.4f)).SetDistanceFromEdge(new Vector2(1.1f, 1.3f));
+                
             _toggleOfficialsButton.OnClick.AddListener((Action) (() =>
             {
                 UnifyPlugin.ShowOfficialRegions.Value = !UnifyPlugin.ShowOfficialRegions.Value;
@@ -298,38 +269,15 @@ namespace Unify.Patches
             }));
         }
 
-        private static void SetUpToggleExtrasButton(Controls.Button button)
+        private static async Task SetUpToggleExtrasButton()
         {
-            _toggleExtrasButton = button;
-
+            _toggleExtrasButton = await Controls.Button.Create("Toggle Extra Regions");
+            _toggleExtrasButton.SetSize(new Vector2(2f, 0.4f)).SetDistanceFromEdge(new Vector2(1.1f, 1.8f));
+                
             _toggleExtrasButton.OnClick.AddListener((Action) (() =>
             {
                 UnifyPlugin.ShowExtraRegions.Value = !UnifyPlugin.ShowExtraRegions.Value;
                 RegionsPatch.RegionMenuPatches.RefreshRegionMenu();
-            }));
-        }
-
-        private static void SetUpMoveUpButton(Controls.Button button)
-        {
-            MoveUpButton = button;
-
-            MoveUpButton.GameObject.transform.position = DestroyableSingleton<RegionMenu>.Instance.transform.position;
-        }
-
-        private static void SetUpMoveDownButton(Controls.Button button)
-        {
-            MoveDownButton = button;
-
-            MoveDownButton.GameObject.transform.position = DestroyableSingleton<RegionMenu>.Instance.transform.position;
-        }
-
-        private static void SetUpAddRegionButton(Controls.Button button)
-        {
-            _addRegionButton = button;
-            
-            _addRegionButton.OnClick.AddListener((Action) (() =>
-            {
-                _addRegionPopup.GameObject.SetActive(true);
             }));
         }
 
@@ -338,6 +286,8 @@ namespace Unify.Patches
         {
             public static void Postfix()
             {
+                if (!GameObject.Find("RegionMenu")) return;
+                
                 _switchButton.GameObject.SetActive(true);
             }
         }
@@ -356,12 +306,17 @@ namespace Unify.Patches
             [HarmonyPrefix]
             public static bool DisableRegionButtonsPatch()
             {
-                return !IsActive;
+                if (IsActive) return false;
+                
+                Hide();
+                return true;
             }
 
             private static void Hide()
             {
-                HideRegionsEditor();
+                if (!RegionsPatch.DirectConnect) return;
+                
+                SetRegionsEditorVisibility(false);
                 
                 _switchButton.GameObject.SetActive(false);
                 RegionsPatch.DirectConnect.gameObject.SetActive(false);

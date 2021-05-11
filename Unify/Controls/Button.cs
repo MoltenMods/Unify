@@ -31,7 +31,7 @@ namespace Unify.Controls
         public AspectPosition Position { get; }
         public UnityEngine.UI.Button.ButtonClickedEvent OnClick { get; }
 
-        private Button(string text, Vector2 size, Vector2 position)
+        private Button(string text)
         {
             GameObject = Object.Instantiate(_instance).DontDestroy();
 
@@ -40,25 +40,46 @@ namespace Unify.Controls
             OnClick = GameObject.GetComponent<PassiveButton>().OnClick;
             _spriteRenderer = GameObject.GetComponent<SpriteRenderer>();
             _boxCollider2D = GameObject.GetComponent<BoxCollider2D>();
+            
+            var size = new Vector2(Text.preferredWidth, Text.preferredHeight);
 
             Text.text = text;
             Text.rectTransform.sizeDelta = size;
-            Position.DistanceFromEdge = new Vector3(position.x, position.y, -100f);
+            Position.DistanceFromEdge =
+                new Vector3(Text.preferredWidth / 2f + 0.1f, Text.preferredHeight / 2f + 0.1f, -100f);
             _spriteRenderer.size = size;
             _boxCollider2D.size = size;
         }
 
-        public static async Task<Button> Create(string text, Vector2 size, Vector2 position)
+        public static async Task<Button> Create(string text)
         {
             await Initialized.Task;
 
-            return new Button(text, size, position);
+            return new Button(text);
         }
 
-        public static async void Create(string text, Vector2 size, Vector2 position, Action<Button> callback)
+        public Button SetText(string newText)
         {
-            var newButton = await Create(text, size, position);
-            callback(newButton);
+            Text.text = newText;
+            return this;
+        }
+
+        public Button SetSize(Vector2 newSize)
+        {
+            Size = newSize;
+            return this;
+        }
+
+        public Button SetDistanceFromEdge(Vector2 newPosition)
+        {
+            Position.DistanceFromEdge = new Vector3(newPosition.x, newPosition.y, -100f);
+            return this;
+        }
+
+        public Button SetAlignment(AspectPosition.EdgeAlignments newAlignment)
+        {
+            Position.Alignment = newAlignment;
+            return this;
         }
 
         public static void InitializeBaseButton()
@@ -96,7 +117,7 @@ namespace Unify.Controls
                 _instance.GetComponent<ConditionalHide>().Destroy();
                 _instance.GetComponentInChildren<TextTranslatorTMP>().Destroy();
                 _instance.GetComponentInChildren<TextMeshPro>().text = "Button";
-                
+
                 Initialized.SetResult(true);
             }
         }
