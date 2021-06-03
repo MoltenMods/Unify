@@ -30,13 +30,16 @@ Other mods can add regions via the
 
 > **⚠ WARNING**
 >
-> This mod only has compiled releases for the steam release of the game.
+> This mod is compiled against the steam edition of the game, but should work on any edition on a version between 2021.5.10 and 2021.5.25.2, including the Itch and Epic Games editions.
 
 > If you are still using 2020.12.9s and Reactor fails to load, try using the Reactor version located
 > here: https://github.com/NuclearPowered/Reactor/actions/runs/593649307.
 
 > If you are still using 2021.3.5s and Reactor fails to load, try using the Reactor version located
 > here: https://github.com/NuclearPowered/Reactor/actions/runs/636023321.
+
+> If you are still using 2021.4.12s-2021.4.14s and Reactor fails to load, try using the Reactor
+> version located here: https://github.com/NuclearPowered/Reactor/actions/runs/827746360
 
 1. Ensure that BepInEx and Reactor (Reactor is not required for pre releases) are installed
    ([installation guide](INSTALLATION.md)).
