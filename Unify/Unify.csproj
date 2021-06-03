@@ -9,28 +9,32 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(GamePlatform)' == 'Steam'">
-        <GameVersion>2021.5.10s</GameVersion>
+        <GameVersion>2021.5.25s</GameVersion>
         <DefineConstants>$(DefineConstants);STEAM</DefineConstants>
     </PropertyGroup>
   
     <PropertyGroup Condition="'$(GamePlatform)' == 'Itch'">
-        <GameVersion>2021.5.10i</GameVersion>
+        <GameVersion>2021.5.25i</GameVersion>
         <DefineConstants>$(DefineConstants);ITCH</DefineConstants>
     </PropertyGroup>
   
     <ItemGroup>
         <Deobfuscate Include="$(AmongUs)\BepInEx\plugins\Reactor-$(GameVersion).dll" />
     </ItemGroup>
-  
-    <ItemGroup>
-        <PackageReference Include="Reactor.OxygenFilter.MSBuild" Version="0.3.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
-  
-    <Target Name="Copy" AfterTargets="Reobfuscate">
-        <Copy SourceFiles="$(OutputPath)reobfuscated/$(AssemblyName)-$(GameVersion).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" />
-        <Copy SourceFiles="$(OutputPath)reobfuscated/$(AssemblyName)-$(GameVersion).dll" DestinationFolder="../build/" />
+
+    <Target Name="Copy" AfterTargets="Build">
+        <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFiles="$(AmongUs)/BepInEx/plugins/$(AssemblyName)-$(GameVersion).dll" />
     </Target>
+
+    <ItemGroup>
+        <Reference Include="$(AmongUs)\BepInEx\core\*.dll">
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="$(AmongUs)\BepInEx\unhollowed\*.dll">
+            <Private>false</Private>
+        </Reference>
+        <Reference Remove="$(AmongUs)\BepInEx\unhollowed\netstandard.dll;$(AmongUs)\BepInEx\unhollowed\Newtonsoft.Json.dll" />
+
+        <Reference Include="$(AmongUs)\BepInEx\plugins\Reactor-$(GameVersion).dll" />
+    </ItemGroup>
 </Project>
