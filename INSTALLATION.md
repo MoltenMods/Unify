@@ -64,6 +64,11 @@ library then selecting `Manage > Browse local files`.
    
 ## Installing Reactor
 
+> If you're using version 2021.5.10 or newer, download the Reactor
+> located here instead:
+> https://github.com/DaemonBeast/Reactor/releases/tag/0.6.0, then
+> skip to step 4 below.
+
 1. Go to the
    [Reactor CI](https://github.com/NuclearPowered/Reactor/actions)
    page.
