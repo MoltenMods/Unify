@@ -39,10 +39,6 @@ namespace Unify
             ShowExtraRegions = ConfigFile.Bind("Preferences", "Show Extra Regions", true,
                 "If the extra regions added by default in Unify should be shown when displaying the regions menu");
 
-            // Unpatches the modded handshake, because Impostor is STILL not fully updated yet
-            Harmony.Unpatch(typeof(UdpConnection).GetMethod("HandleSend"), HarmonyPatchType.Prefix, 
-                ReactorPlugin.Id);
-
             Harmony.PatchAll();
             
             Button.InitializeBaseButton();
